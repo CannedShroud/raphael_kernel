@@ -690,7 +690,7 @@ LTO_CFLAGS	:= -flto -flto=jobserver -fno-fat-lto-objects \
 		   -fuse-linker-plugin -fwhole-program
 KBUILD_CFLAGS	+= $(LTO_CFLAGS) --param=max-inline-insns-auto=1000
 LTO_LDFLAGS	:= $(LTO_CFLAGS) -Wno-lto-type-mismatch -Wno-psabi \
-		   -Wno-stringop-overflow -flinker-output=nolto-rel
+		   -Wno-stringop-overflow -flinker-output=nolto-rel -O3
 LDFINAL		:= $(CONFIG_SHELL) $(srctree)/scripts/gcc-ld $(LTO_LDFLAGS)
 AR		:= $(CROSS_COMPILE)gcc-ar
 NM		:= $(CROSS_COMPILE)gcc-nm
@@ -810,7 +810,10 @@ KBUILD_CFLAGS += $(call cc-disable-warning, unused-but-set-variable)
 endif
 
 ifeq ($(ld-name),lld)
-LDFLAGS += -O3 --strip-debug
+LDFLAGS += --lto-O3 --strip-debug
+else
+LDFLAGS += -O3
+KBUILD_LDFLAGS += $(LDFLAGS)
 endif
 
 KBUILD_CFLAGS += $(call cc-disable-warning, unused-const-variable)

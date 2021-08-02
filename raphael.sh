@@ -150,7 +150,7 @@ exports() {
 # Function to replace defconfig versioning
 setversioning() {
     # For staging branchc
-    KERNELNAME="ProjectLighthouseKernel-PIXEL-$DATE"
+    KERNELNAME="ProjectLighthouseKernel-MID-$DATE"
     # Export our new localversion and zipnames
     export KERNELNAME
     export ZIPNAME="$KERNELNAME.zip"

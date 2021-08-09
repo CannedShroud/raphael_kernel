@@ -49,8 +49,8 @@ DEFCONFIG=raphael_defconfig
 MANUFACTURERINFO="Xiaomi"
 
 # Specify compiler. 
-# 'clang' or 'gcc'
-COMPILER=clang
+# 'CLANG' or 'GCC'
+COMPILER=CLANG
 
 # Kernel is LTO
 LTO=0
@@ -92,14 +92,14 @@ DATE=$(TZ=Asia/Kolkata date +"%Y%m%d")
 
  clone() {
 	echo " "
-	if [ $COMPILER = "clang" ]
+	if [ $COMPILER = "CLANG" ]
 	then
 		msg "|| Cloning toolchain ||"
 		git clone --depth=1 https://github.com/kdrag0n/proton-clang clang
 
 		# Toolchain Directory defaults to clang-llvm
 		TC_DIR=$KERNEL_DIR/clang
-	elif [ $COMPILER = "gcc" ]
+	elif [ $COMPILER = "GCC" ]
 	then
 		msg "|| Cloning GCC ||"
 		git clone https://github.com/mvaisakh/gcc-arm64.git gcc64 --depth=1 -b gcc-new
@@ -125,11 +125,11 @@ exports() {
 	export ARCH=arm64
 	export SUBARCH=arm64
 
-	if [ $COMPILER = "clang" ]
+	if [ $COMPILER = "CLANG" ]
 	then
 		KBUILD_COMPILER_STRING=$("$TC_DIR"/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')
 		PATH=$TC_DIR/bin/:$PATH
-	elif [ $COMPILER = "gcc" ]
+	elif [ $COMPILER = "GCC" ]
 	then
 		KBUILD_COMPILER_STRING=$("$GCC64_DIR"/bin/aarch64-elf-gcc --version | head -n 1)
 		PATH=$GCC64_DIR/bin/:$GCC32_DIR/bin/:/usr/bin:$PATH
@@ -150,7 +150,11 @@ exports() {
 # Function to replace defconfig versioning
 setversioning() {
     # For staging branchc
-    KERNELNAME="ProjectLighthouseKernel-MID-$DATE"
+	if [ $LTO = "1" ];then
+	    KERNELNAME="ProjectLighthouseKernel-$COMPILER-LTO-$DATE"
+	else 
+	    KERNELNAME="ProjectLighthouseKernel-$COMPILER-$DATE"
+	fi
     # Export our new localversion and zipnames
     export KERNELNAME
     export ZIPNAME="$KERNELNAME.zip"
@@ -178,7 +182,7 @@ build_kernel() {
 
 	BUILD_START=$(date +"%s")
 	
-	if [ $COMPILER = "clang" ]
+	if [ $COMPILER = "CLANG" ]
 	then
 		make -j"$PROCS" O=out \
 				CROSS_COMPILE=aarch64-linux-gnu- \
@@ -189,7 +193,7 @@ build_kernel() {
 				STRIP=llvm-strip
 	fi
 
-	if [ $COMPILER = "gcc" ]
+	if [ $COMPILER = "GCC" ]
 	then
 		make -j"$PROCS" O=out \
 				CROSS_COMPILE_ARM32=arm-eabi- \

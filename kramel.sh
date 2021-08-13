@@ -307,8 +307,7 @@ gen_zip() {
 	then
 		python2 "libufdt/utils/src/mkdtboimg.py" \
 					create "out/arch/arm64/boot/dtbo.img" --page_size=4096 out/arch/arm64/boot/dts/qcom/raphael-sm8150-overlay.dtbo
-		mv "$KERNEL_DIR"/out/arch/arm64/boot/dts/qcom/raphael-sm8150-overlay.dtbo AnyKernel3/dtbo.img
-		ls "$KERNEL_DIR"/out/arch/arm64/boot/dts/qcom/
+		mv "$KERNEL_DIR"/out/arch/arm64/boot/dtbo.img AnyKernel3/dtbo.img
 	fi
 	cdir AnyKernel3
 	zip -r $ZIPNAME-$DEVICE-"$DATE" . -x ".git*" -x "README.md" -x "*.zip"

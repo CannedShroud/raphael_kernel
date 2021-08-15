@@ -236,10 +236,10 @@ build_kernel() {
 		make clean && make mrproper && rm -rf out
 	fi
 
-	if [ "$PTTG" = 1 ]
- 	then
-		tg_post_msg "<b>Build Triggered!</b>%0A%0A<b>Kernel Version : </b><code>$KERVER</code>%0A<b>Date : </b><code>$(TZ=Asia/Kolkata date)</code>%0A<b>Device : </b><code>$MODEL [$DEVICE]</code>%0A<b>Compiler Used : </b><code>$KBUILD_COMPILER_STRING</code>%0A<b>Branch : </b><code>$CI_BRANCH</code>%0A<a href='$SERVER_URL'>See Progress</a>"
-	fi
+	# if [ "$PTTG" = 1 ]
+ 	# then
+	# 	tg_post_msg "<b>Build Triggered!</b>%0A%0A<b>Kernel Version : </b><code>$KERVER</code>%0A<b>Date : </b><code>$(TZ=Asia/Kolkata date)</code>%0A<b>Device : </b><code>$MODEL [$DEVICE]</code>%0A<b>Compiler Used : </b><code>$KBUILD_COMPILER_STRING</code>%0A<b>Branch : </b><code>$CI_BRANCH</code>%0A<a href='$SERVER_URL'>See Progress</a>"
+	# fi
 
 	make O=out $DEFCONFIG
 	if [ $DEF_REG = 1 ]

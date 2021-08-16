@@ -331,6 +331,7 @@ gen_zip() {
 	if [ "$PTTG" = 1 ]
  	then
 		tg_post_build "$ZIP_FINAL" "✅ <b>Build Success! </b> | |  Took: $((DIFF / 60)) minutes | | <b>Branch : </b><code>$CI_BRANCH</code>"
+		tg_post_msg "Use <code>#branch</code> to find a kernel that fits your needs"
 	fi
 	cd ..
 }

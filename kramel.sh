@@ -330,7 +330,7 @@ gen_zip() {
 
 	if [ "$PTTG" = 1 ]
  	then
-		tg_post_build "$ZIP_FINAL" "✅ <b>Build Success! </b>%0A%0A Took: $((DIFF / 60)) minutes"
+		tg_post_build "$ZIP_FINAL" "✅ <b>Build Success! </b>%0A Took: $((DIFF / 60)) minutes%0A<b>Branch : </b><code>$CI_BRANCH</code>"
 	fi
 	cd ..
 }

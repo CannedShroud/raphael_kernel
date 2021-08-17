@@ -151,9 +151,9 @@ exports() {
 setversioning() {
     # For staging branchc
 	if [ $LTO = "1" ];then
-	    KERNELNAME="ProjectLighthouseKernel-$COMPILER-LTO-nodim-$DATE"
+	    KERNELNAME="ProjectLighthouseKernel-$COMPILER-LTO-$DATE"
 	else 
-	    KERNELNAME="ProjectLighthouseKernel-$COMPILER-nodim-$DATE"
+	    KERNELNAME="ProjectLighthouseKernel-$COMPILER-$DATE"
 	fi
     # Export our new localversion and zipnames
     export KERNELNAME

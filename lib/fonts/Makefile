@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0
 # Font handling
 
-ccflags-y += -Ofast
+ccflags-y += -Omax
 
 font-objs := fonts.o
 

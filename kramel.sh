@@ -141,6 +141,14 @@ then
 	fi
 fi
 
+if [[ $CI_BRANCH == *"release"* ]]; then
+	echo "Release branch detected!"
+else 
+	echo "Dev branch!"
+	CHATID=$DEVCHATID
+	ZIPNAME="LH-TEST"
+fi
+
 #Check Kernel Version
 KERVER=$(make kernelversion)
 
@@ -310,6 +318,7 @@ gen_zip() {
 		mv "$KERNEL_DIR"/out/arch/arm64/boot/dtbo.img AnyKernel3/dtbo.img
 	fi
 	cdir AnyKernel3
+
 	zip -r $ZIPNAME-$DEVICE-"$DATE" . -x ".git*" -x "README.md" -x "*.zip"
 
 	## Prepare a final zip variable

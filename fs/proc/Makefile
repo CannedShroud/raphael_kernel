@@ -3,7 +3,7 @@
 # Makefile for the Linux proc filesystem routines.
 #
 
-ccflags-y += -Omax
+ccflags-y += -Ofast
 
 obj-y   += proc.o
 

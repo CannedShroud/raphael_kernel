@@ -1,4 +1,4 @@
-ccflags-y += -Omax
+ccflags-y += -Ofast
 
 obj-y	= printk.o
 obj-$(CONFIG_PRINTK)	+= printk_safe.o

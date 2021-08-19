@@ -415,7 +415,7 @@ static ssize_t wsa881x_swrslave_reg_show(char __user *ubuf, size_t count,
 			continue;
 		swr_read(dbgwsa881x->swr_slave, devnum,
 			i, &reg_val, 1);
-		len = snprintf(tmp_buf, 25, "0x%.3x: 0x%.2x\n", i,
+		len = snprintf(tmp_buf, sizeof(tmp_buf), "0x%.3x: 0x%.2x\n", i,
 			       (reg_val & 0xFF));
 		if (len < 0) {
 			pr_err("%s: fail to fill the buffer\n", __func__);
@@ -441,7 +441,7 @@ copy_err:
 static ssize_t codec_debug_read(struct file *file, char __user *ubuf,
 				size_t count, loff_t *ppos)
 {
-	char lbuf[SWR_SLV_RD_BUF_LEN] = "";
+	char lbuf[SWR_SLV_RD_BUF_LEN];
 	char *access_str;
 	ssize_t ret_cnt;
 
@@ -468,7 +468,7 @@ static ssize_t codec_debug_read(struct file *file, char __user *ubuf,
 static ssize_t codec_debug_write(struct file *filp,
 	const char __user *ubuf, size_t cnt, loff_t *ppos)
 {
-	char lbuf[SWR_SLV_WR_BUF_LEN] = "";
+	char lbuf[SWR_SLV_WR_BUF_LEN];
 	int rc;
 	u32 param[5];
 	char *access_str;

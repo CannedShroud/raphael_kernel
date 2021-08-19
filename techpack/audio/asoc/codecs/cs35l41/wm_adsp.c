@@ -9,7 +9,6 @@
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  */
-#define DEBUG
 //#define WM_ADSP_DEBUG
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -1248,7 +1247,7 @@ static int wm_adsp2_raw_read(size_t maxbulk, struct regmap *map,
 		ret = regmap_raw_read(map, reg + read_len,
 				      val + read_len, toread_len);
 		if (ret < 0) {
-			printk("%s failed, toread_len:%lu reg base:%u reg:%lu read_len:%lu\n",
+			printk("%s failed, toread_len:%u reg base:%u reg:%u read_len:%u\n",
 			       __func__, toread_len, reg,
 			       reg + read_len, read_len);
 			return ret;

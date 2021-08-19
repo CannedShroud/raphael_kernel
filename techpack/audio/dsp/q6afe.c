@@ -26,7 +26,12 @@
 #include <dsp/q6common.h>
 #include <dsp/q6core.h>
 #include <dsp/msm-audio-event-notify.h>
+#ifdef CONFIG_ELLIPTIC_ULTRASOUND
 #include <dsp/apr_elliptic.h>
+#endif
+#ifdef CONFIG_US_PROXIMITY
+#include <dsp/apr_mius.h>
+#endif
 #include <ipc/apr_tal.h>
 #include "adsp_err.h"
 #include "q6afecal-hwdep.h"
@@ -170,7 +175,7 @@ struct afe_ctl {
 #ifdef CONFIG_SND_SOC_TFA9874_FOR_DAVI
 	struct rtac_cal_block_data tfa_cal;
 	atomic_t tfa_state;
-#endif
+#endif /*CONFIG_SND_SOC_TFA9874_FOR_DAVI*/
 	struct notifier_block event_notifier;
 	/* FTM spk params */
 	uint32_t initial_cal;
@@ -195,6 +200,17 @@ bool afe_close_done[2] = {true, true};
 static int afe_get_cal_hw_delay(int32_t path,
 				struct audio_cal_hw_delay_entry *entry);
 static int remap_cal_data(struct cal_block_data *cal_block, int cal_index);
+
+#ifdef CONFIG_MSM_CSPL
+struct afe_cspl_state cspl_afe = {
+	.apr= &this_afe.apr,
+	.status= &this_afe.status,
+	.state= &this_afe.state,
+	.wait= this_afe.wait,
+	.timeout_ms= TIMEOUT_MS,
+};
+EXPORT_SYMBOL(cspl_afe);
+#endif
 
 int afe_get_spk_initial_cal(void)
 {
@@ -240,17 +256,6 @@ void afe_set_spk_v_vali_flag(int v_vali_flag)
 {
 	this_afe.v_vali_flag = v_vali_flag;
 }
-
-#ifdef CONFIG_MSM_CSPL
-struct afe_cspl_state cspl_afe = {
-	.apr= &this_afe.apr,
-	.status= &this_afe.status,
-	.state= &this_afe.state,
-	.wait= this_afe.wait,
-	.timeout_ms= TIMEOUT_MS,
-};
-EXPORT_SYMBOL(cspl_afe);
-#endif
 
 int afe_get_topology(int port_id)
 {
@@ -579,6 +584,7 @@ static int32_t afe_callback(struct apr_client_data *data, void *priv)
 		if (crus_afe_callback(data->payload, data->payload_size) == 0)
 			return 0;
 #endif
+
 		if (!payload || (data->token >= AFE_MAX_PORTS)) {
 			pr_err("%s: Error: size %d payload %pK token %d\n",
 				__func__, data->payload_size,
@@ -598,6 +604,7 @@ static int32_t afe_callback(struct apr_client_data *data, void *priv)
 			av_dev_drift_afe_cb_handler(data->opcode, data->payload,
 						    data->payload_size);
 		} else {
+
 #ifdef CONFIG_SND_SOC_TFA9874_FOR_DAVI
 			if (atomic_read(&this_afe.tfa_state) == 1 &&
 				data->payload_size == sizeof(uint32_t)) {
@@ -613,7 +620,7 @@ static int32_t afe_callback(struct apr_client_data *data, void *priv)
 
 				return 0;
 			}
-#endif
+#endif /*CONFIG_SND_SOC_TFA9874_FOR_DAVI*/
 
 			if (sp_make_afe_callback(data->opcode, data->payload,
 						 data->payload_size))
@@ -623,11 +630,6 @@ static int32_t afe_callback(struct apr_client_data *data, void *priv)
 			wake_up(&this_afe.wait[data->token]);
 		else
 			return -EINVAL;
-	} else if (data->opcode == ULTRASOUND_OPCODE) {
-		if (NULL != data->payload)
-			elliptic_process_apr_payload(data->payload);
-		else
-			pr_err("[EXPORT_SYMBOLLUS]: payload ptr is Invalid");
 	} else if (data->opcode == AFE_EVENT_MBHC_DETECTION_SW_WA) {
 		msm_aud_evt_notifier_call_chain(SWR_WAKE_IRQ_EVENT, NULL);
 	} else if (data->opcode ==
@@ -640,11 +642,23 @@ static int32_t afe_callback(struct apr_client_data *data, void *priv)
 		atomic_set(&this_afe.state, 0);
 		atomic_set(&this_afe.status, 0);
 		wake_up(&this_afe.lpass_core_hw_wait);
+#ifdef CONFIG_ELLIPTIC_ULTRASOUND
 	} else if (data->opcode == ULTRASOUND_OPCODE) {
 		if (NULL != data->payload)
 			elliptic_process_apr_payload(data->payload);
 		else
 			pr_err("[EXPORT_SYMBOLLUS]: payload ptr is Invalid");
+#endif
+#ifdef CONFIG_US_PROXIMITY
+	} else if (data->opcode == MI_ULTRASOUND_OPCODE) {
+		if (NULL != data->payload)
+		{
+			printk(KERN_DEBUG "[MIUS] mi ultrasound afe afe cb");
+			mius_process_apr_payload(data->payload);
+		}
+		else
+			pr_err("[EXPORT_SYMBOLLUS]: payload ptr is Invalid");
+#endif
 	} else if (data->payload_size) {
 		uint32_t *payload;
 		uint16_t port_id = 0;
@@ -1726,7 +1740,7 @@ static int afe_spk_prot_prepare(int src_port, int dst_port, int param_id,
 	case AFE_PARAM_ID_TFADSP_TX_SET_ENABLE:
 		param_info.module_id = AFE_MODULE_ID_TFADSP_TX;
 		break;
-#endif
+#endif	/*CONFIG_SND_SOC_TFA9874_FOR_DAVI*/
 	default:
 		pr_err("%s: default case 0x%x\n", __func__, param_id);
 		goto fail_cmd;
@@ -1795,6 +1809,7 @@ fail_idx:
 	return ret;
 }
 
+#ifdef CONFIG_ELLIPTIC_ULTRASOUND
 afe_ultrasound_state_t elus_afe = {
 	.ptr_apr= &this_afe.apr,
 	.ptr_status= &this_afe.status,
@@ -1803,6 +1818,18 @@ afe_ultrasound_state_t elus_afe = {
 	.timeout_ms= TIMEOUT_MS,
 };
 EXPORT_SYMBOL(elus_afe);
+#endif
+
+#ifdef CONFIG_US_PROXIMITY
+afe_mi_ultrasound_state_t mius_afe = {
+	.ptr_apr= &this_afe.apr,
+	.ptr_status= &this_afe.status,
+	.ptr_state= &this_afe.state,
+	.ptr_wait= this_afe.wait,
+	.timeout_ms= TIMEOUT_MS,
+};
+EXPORT_SYMBOL(mius_afe);
+#endif
 
 static void afe_send_cal_spkr_prot_tx(int port_id)
 {
@@ -4446,11 +4473,10 @@ static int __afe_port_start(u16 port_id, union afe_port_config *afe_config,
 		goto fail_cmd;
 	}
 	ret = afe_send_cmd_port_start(port_id);
-#if CONFIG_MSM_CSPL
+#ifdef CONFIG_MSM_CSPL
 	if (ret == 0)
 		crus_afe_port_start(port_id);
 #endif
-
 
 fail_cmd:
 	mutex_unlock(&this_afe.afe_cmd_lock);
@@ -6217,7 +6243,7 @@ static ssize_t afe_debug_write(struct file *filp,
 	const char __user *ubuf, size_t cnt, loff_t *ppos)
 {
 	char *lb_str = filp->private_data;
-	char lbuf[32] = "";
+	char lbuf[32];
 	int rc;
 	unsigned long param[5];
 
@@ -7154,8 +7180,8 @@ int afe_close(int port_id)
 	if (ret)
 		pr_err("%s: AFE close failed %d\n", __func__, ret);
 
-#if CONFIG_MSM_CSPL
-    crus_afe_port_close(port_id);
+#ifdef CONFIG_MSM_CSPL
+	crus_afe_port_close(port_id);
 #endif
 
 fail_cmd:
@@ -7473,6 +7499,7 @@ static int afe_get_sp_th_vi_v_vali_data(
 
 	mutex_lock(&this_afe.afe_cmd_lock);
 	memset(&param_hdr, 0, sizeof(param_hdr));
+	memset(th_vi_v_vali, 0, sizeof(*th_vi_v_vali));
 
 	param_hdr.module_id = AFE_MODULE_SPEAKER_PROTECTION_V2_TH_VI;
 	param_hdr.instance_id = INSTANCE_ID_0;
@@ -8849,7 +8876,7 @@ void afe_exit(void)
 {
 #ifdef CONFIG_SND_SOC_TFA9874_FOR_DAVI
 	afe_unmap_rtac_block(&this_afe.tfa_cal.map_data.map_handle);
-#endif
+#endif /*CONFIG_SND_SOC_TFA9874_FOR_DAVI*/
 
 	if (this_afe.apr) {
 		apr_reset(this_afe.apr);

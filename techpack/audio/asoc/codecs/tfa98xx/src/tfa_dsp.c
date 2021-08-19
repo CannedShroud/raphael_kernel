@@ -3771,12 +3771,15 @@ int tfa_dev_mtp_get(struct tfa_device *tfa, enum tfa_mtp item)
 		case TFA_MTP_RE25:
 		case TFA_MTP_RE25_PRIM:
 			if(tfa->tfa_family == 2) {
-				if((tfa->rev & 0xFF) == 0x88)
+				if((tfa->rev & 0xFF) == 0x88){
 					value = TFA_GET_BF(tfa, R25CL);
-				else if((tfa->rev & 0xFF) == 0x13)
+				}
+				else if ((tfa->rev & 0xFF) == 0x13) {
 					value = tfa_get_bf(tfa, TFA9912_BF_R25C);
-				else
+				}
+				else{
 					value = TFA_GET_BF(tfa, R25C);
+				}
 			} else {
 				reg_read(tfa, 0x83, (unsigned short*)&value);
 			}

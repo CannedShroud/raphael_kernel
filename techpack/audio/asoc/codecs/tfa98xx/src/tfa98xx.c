@@ -207,7 +207,7 @@ static enum tfa_error tfa98xx_write_re25(struct tfa_device *tfa, int value)
 static enum tfa_error tfa98xx_tfa_start(struct tfa98xx *tfa98xx, int next_profile, int vstep)
 {
 	enum tfa_error err;
-	ktime_t start_time, stop_time;
+	ktime_t start_time = 0, stop_time;
 	u64 delta_time;
 
 	pr_debug("%s  next_profile=%d  vstep=%d\n", __func__, next_profile, vstep);
@@ -523,7 +523,7 @@ static ssize_t tfa98xx_dbgfs_start_set(struct file *file,
 	struct i2c_client *i2c = file->private_data;
 	struct tfa98xx *tfa98xx = i2c_get_clientdata(i2c);
 	enum tfa_error ret;
-	char buf[32];
+	char buf[32] = "";
 	const char ref[] = "please calibrate now";
 	int buf_size;
 
@@ -673,7 +673,7 @@ static ssize_t tfa98xx_dbgfs_dsp_state_set(struct file *file,
 	struct i2c_client *i2c = file->private_data;
 	struct tfa98xx *tfa98xx = i2c_get_clientdata(i2c);
 	enum tfa_error ret;
-	char buf[32];
+	char buf[32] = "";
 	const char start_cmd[] = "start";
 	const char stop_cmd[] = "stop";
 	const char mon_start_cmd[] = "monitor start";
@@ -745,7 +745,7 @@ static ssize_t tfa98xx_dbgfs_fw_state_get(struct file *file,
 #ifdef TFA_NON_DSP_SOLUTION
 extern int send_tfa_cal_apr(void *buf, int cmd_size, bool bRead);
 #else
-int send_tfa_cal_apr(void *buf, int cmd_size, bool bRead)
+extern int send_tfa_cal_apr(void *buf, int cmd_size, bool bRead)
 {
     return 0;
 }
@@ -1764,7 +1764,7 @@ static int tfa98xx_append_i2c_address(struct device *dev,
 				struct snd_soc_dai_driver *dai_drv,
 				int num_dai)
 {
-	char buf[50];
+	char buf[50] = "";
 	int i;
 	int i2cbus = i2c->adapter->nr;
 	int addr = i2c->addr;

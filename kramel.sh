@@ -145,7 +145,7 @@ if [[ $CI_BRANCH == *"release"* ]]; then
 	echo "Release branch detected!"
 else 
 	echo "Dev branch!"
-	CHATID=$DEVCHATID
+	CHATID=$CHATID
 	ZIPNAME="LH-TEST"
 fi
 

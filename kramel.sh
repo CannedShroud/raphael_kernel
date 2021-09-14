@@ -184,8 +184,6 @@ DATE=$(TZ=Asia/Kolkata date +"%Y%m%d-%s")
 	git clone --depth 1 --no-single-branch https://github.com/CannedShroud/AnyKernel3.git -b raphael
 	msg "|| Cloning libufdt ||"
 	git clone --depth=1 https://android.googlesource.com/platform/system/libufdt libufdt
-	msg "|| Cloning dtc-aosp ||"
-	git clone --depth=1 https://android.googlesource.com/platform/external/dtc scripts/dtc-aosp/dtc
 }
 
 ##------------------------------------------------------##

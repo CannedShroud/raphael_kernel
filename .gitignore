@@ -139,3 +139,5 @@ AnyKernel3/
 clang/
 gcc32/
 gcc64/
+error.log
+libufdt

@@ -153,7 +153,7 @@ setversioning() {
 	if [ $LTO = "1" ];then
 	    KERNELNAME="ProjectLighthouseKernel-$COMPILER-LTO-nodim-$DATE"
 	else 
-	    KERNELNAME="ProjectLighthouseKernel-$COMPILER-nodim-$DATE"
+	    KERNELNAME="new-dts"
 	fi
     # Export our new localversion and zipnames
     export KERNELNAME

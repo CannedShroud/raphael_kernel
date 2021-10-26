@@ -909,9 +909,6 @@ static int goodix_ts_input_report(struct input_dev *dev,
 				coords->overlapping_area = 0;
 			input_report_abs(dev, ABS_MT_WIDTH_MINOR, coords->overlapping_area);
 			input_report_abs(dev, ABS_MT_WIDTH_MAJOR, coords->overlapping_area);
-			if (!__test_and_set_bit(i, &core_data->touch_id)) {
-				ts_info("[GTP] %s report press:%d", __func__, i);
-			}
 			dev_dbg(core_data->ts_dev->dev, "[GTP] %s report:[%d](%d, %d, %d, %d)", __func__, id,
 				touch_data->coords[0].x, touch_data->coords[0].y,
 				touch_data->coords[0].area, touch_data->coords[0].overlapping_area);
@@ -925,7 +922,6 @@ static int goodix_ts_input_report(struct input_dev *dev,
 					input_report_key(dev, BTN_TOOL_FINGER, 0);
 					core_data->sleep_finger = 0;
 				}
-				ts_info("[GTP] %s report leave:%d", __func__, i);
 			}
 		}
 	}
@@ -936,7 +932,6 @@ static int goodix_ts_input_report(struct input_dev *dev,
 			input_report_key(core_data->input_dev, BTN_INFO, 1);
 			/*input_report_key(core_data->input_dev, KEY_INFO, 1);*/
 			core_data->fod_pressed = true;
-			ts_info("BTN_INFO press");
 		} else if (core_data->fod_pressed && (core_data->event_status & 0x88) != 0x88) {
 		if (unlikely(!core_data->fod_test)) {
 			input_report_key(core_data->input_dev, BTN_INFO, 0);

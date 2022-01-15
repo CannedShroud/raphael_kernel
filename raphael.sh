@@ -198,9 +198,11 @@ build_kernel() {
 		make -j"$PROCS" O=out \
 				CROSS_COMPILE_ARM32=arm-eabi- \
 				CROSS_COMPILE=aarch64-elf- \
-				AR=aarch64-elf-ar \
+				AR=llvm-ar \
 				OBJDUMP=aarch64-elf-objdump \
-				STRIP=aarch64-elf-strip
+				STRIP=aarch64-elf-strip \
+				NM=llvm-nm \
+				OBJCOPY=llvm-objcopy
 	fi
 
 	BUILD_END=$(date +"%s")

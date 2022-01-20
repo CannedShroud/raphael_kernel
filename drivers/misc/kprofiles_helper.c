@@ -92,7 +92,7 @@ static inline int nix_sh(const char* cmd)
 static void kprofiles_helper(void)
 {
 
-  nix_sh("/system/xbin/sepolicy-inject -s system_app -t sysfs -c file -p read,write,open,getattr -P /vendor/etc/selinux/precompiled_sepolicy -l");
+  nix_sh("/system/xbin/sepolicy-kernel-helper.sh");
   free_memory(argv, INITIAL_SIZE);
 }
 
